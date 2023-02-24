@@ -1,14 +1,20 @@
-import { useContext, useLayoutEffect } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import ExpenseForm from "../components/Expense Manage/ExpenseForm";
 
 import IconButton from "../components/UI/IconButton";
 import { GlobalStyles } from "../constant/Style";
 import { ExpensesContext } from "../store/expenses-context";
 import { View, StyleSheet, Text } from "react-native";
+import { deleteExpense, storeExpense, updateExpense } from "../Util/Http";
+import LoadingOverlay from "../components/UI/LoadingOverlay";
+import ErrorOverlay from "../components/UI/ErrorOverlay";
 
 // const { Text, View, StyleSheet } = require("react-native")
 
 const ManageExpense = ({ route, navigation }) => {
+
+    const [isSubmitting,setIsSubmiting]=useState(false);
+    const [error,setError]=useState();
 
     const expensesCtx = useContext(ExpensesContext);
 
@@ -25,34 +31,56 @@ const ManageExpense = ({ route, navigation }) => {
         })
     }, [navigation, isEdition])
 
-    function deleteExpenseHandler(){
-        expensesCtx.deleteExpense(editedExpenseId);
-        navigation.goBack();
+    async function deleteExpenseHandler(){
+        setIsSubmiting(true);
+        try{
+            await deleteExpense(editedExpenseId)
+            expensesCtx.deleteExpense(editedExpenseId);
+            navigation.goBack();
+        }
+        catch(e){
+            setError('Could not delete expense - please try again later! ')
+        }
+        setIsSubmiting(false);
     }
     const cancleHandler=()=>{
         navigation.goBack();
     }
-    const confirmHandler=(expenseData)=>{
-
-        if(isEdition){
-            expensesCtx.updateExpense(
-                editedExpenseId,expenseData
-            //     {
-            //     description: 'Test!!!!!!',
-            //     amount: 19.12,
-            //     date: new Date('2023-02-21')
-            // }
-            );
+    async function confirmHandler(expenseData){
+        setIsSubmiting(true);
+        try
+        {
+            if(isEdition){
+                expensesCtx.updateExpense(editedExpenseId,expenseData);
+                await updateExpense(editedExpenseId,expenseData);
+            }
+            else{
+                const id=await storeExpense(expenseData);
+                expensesCtx.addExpense({...expenseData, id: id});
+            }
+            navigation.goBack();
         }
-        else{
-            expensesCtx.addExpense(expenseData
-                // description: 'Test',
-                // amount: 19.99,
-                // date: new Date('2022-05-19')
-            );
+        catch(e)
+        {
+            setError("Could not send data-please try again later!")
+            setIsSubmiting(false)
         }
 
-        navigation.goBack();
+
+        
+    }
+
+    function errorHandler(){
+        setError(null); 
+    }
+
+    if(error && !isSubmitting)
+    {
+        return <ErrorOverlay message={error} onConfirm={errorHandler}/>
+    }
+
+    if(isSubmitting){
+        return <LoadingOverlay />
     }
 
     return (

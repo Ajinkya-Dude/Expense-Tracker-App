@@ -8,14 +8,14 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ManageExpense from './screens/ManageExpenses';
-import RecentExpenses from './screens/RecentExpenses';
-import AllExpenses from './screens/AllExpenses';
+import ManageExpense from './src/screens/ManageExpenses';
+import RecentExpenses from './src/screens/RecentExpenses';
+import AllExpenses from './src/screens/AllExpenses';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { GlobalStyles } from './constant/Style';
-import IconButton from './components/UI/IconButton';
-import ExpensesContextProvider from './store/expenses-context';
-// import Icon from "react-native-vector-icons/Ionicons";
+import { GlobalStyles } from './src/constant/Style';
+import IconButton from './src/components/UI/IconButton';
+import ExpensesContextProvider from './src/store/expenses-context';
+import Icon from "react-native-vector-icons/Ionicons";
 
 
 //const Stack = createStackNavigator();
@@ -35,11 +35,13 @@ function ExpensesOverView() {
     })}>
       <BottomTabs.Screen name="RecentExpenses" component={RecentExpenses} options={{
         title: 'Recent Expenses',
-        tabBarLabel: "Recent"
+        tabBarLabel: "Recent",
+        tabBarIcon: ({color,size})=>(<Icon name="hourglass" color={color} size={size}  />)
       }} />
       <BottomTabs.Screen name='AllExpenses' component={AllExpenses} options={{
         title: 'All Expenses',
-        tabBarLabel: "All Expenses"
+        tabBarLabel: "All Expenses",
+        tabBarIcon: ({color,size})=>(<Icon name="calendar" color={color} size={size}  />)
       }} />
     </BottomTabs.Navigator>
   )

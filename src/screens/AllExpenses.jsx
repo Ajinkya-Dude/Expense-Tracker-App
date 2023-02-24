@@ -8,9 +8,9 @@ const AllExpenses=({navigation})=>{
 
     const expensesCtx=useContext(ExpensesContext);
 
-    navigation.setOptions({
-        tabBarIcon: ({color,size})=> <Icon name="calendar" color={color} size={size} />
-    })
+    // navigation.setOptions({
+    //     tabBarIcon: ({color,size})=> <Icon name="calendar" color={color} size={size} />
+    // })
 
 
     return(<ExpensesOutput expenses={expensesCtx.expenses} expensesPeriod="Total"/>)
